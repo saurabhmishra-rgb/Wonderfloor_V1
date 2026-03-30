@@ -7,7 +7,7 @@ import office02 from './assets/Office-Flooring_02.jpg';
 import residential03 from './assets/Residential-Flooring_03.jpg';
 import school03 from './assets/School-Flooring_03.jpg';
 import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
-import HeroImage from './assets/Hero.png'; // ← Add this import for the Hero image
+import HeroImage from './assets/hero.png'; // ← Add this import for the Hero image
 
 
 function App() {
