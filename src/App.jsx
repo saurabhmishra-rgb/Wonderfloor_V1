@@ -7,6 +7,7 @@ import office02 from './assets/Office-Flooring_02.jpg';
 import residential03 from './assets/Residential-Flooring_03.jpg';
 import school03 from './assets/School-Flooring_03.jpg';
 import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
+import HeroImage from './assets/Hero.png'; // ← Add this import for the Hero image
 
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
   const [selectedRoomImage, setSelectedRoomImage] = useState(null);
   
   const fileInputRef = useRef(null);
-  const dropdownRef = useRef(null); // Added a reference for the dropdown container
+  const dropdownRef = useRef(null);
 
   // --- Dropdown State ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -23,15 +24,12 @@ function App() {
   // --- Click Outside to Close Logic ---
   useEffect(() => {
     function handleClickOutside(event) {
-      // If the dropdown is open AND the click happened outside of the dropdownRef element
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
     }
-    // Bind the event listener
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      // Unbind the event listener on clean up
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownRef]);
@@ -56,7 +54,6 @@ function App() {
     { id: 2, name: 'Hospital', img: Hospital },
     { id: 4, name: 'Office Space', img: office02 },
     { id: 7, name: 'Residential', img: residential03 },
-    // { id: 8, name: 'Sports', img: Sports },
     { id: 10, name: 'School-Flooring', img: school03 },
     { id: 11, name: 'Supermarket', img: superMarket01 },
   ];
@@ -93,10 +90,10 @@ function App() {
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-16 mt-16 sm:mt-20 md:mt-24 mb-16 sm:mb-24 w-full">
         
         {/* Left Column - Heading & Controls */}
-        <div className="w-full lg:w-[450px] flex flex-col gap-6 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
+        <div className="w-full lg:w-[480px] flex flex-col gap-6 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
           
-          <h1 className="text-[36px] sm:text-[40px] lg:text-[46px] font-bold text-[#202938] mb-2 tracking-tight text-center lg:text-left leading-tight">
-            See products in your room
+          <h1 className="text-[32px] sm:text-[36px] lg:text-[42px] font-bold text-[#202938] mb-2 tracking-tight text-center lg:text-left leading-[1.2] break-words">
+            See live floor transformation in your room
           </h1>
 
           <ul className="text-[15px] sm:text-[16px] text-gray-600 space-y-4 font-medium mb-2">
@@ -131,55 +128,13 @@ function App() {
           />
         </div>
 
-        {/* Right Column - Mock UI Graphic */}
-        <div className="hidden lg:flex flex-1 w-full bg-[#6a6a6a] h-[400px] rounded-none relative overflow-hidden shadow-sm select-none">
-          {/* Inner Light Gray Wall */}
-          <div className="absolute top-12 left-12 right-12 bottom-20 bg-[#e6e6e6] rounded-none"></div>
-          
-          {/* Floor */}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#555555]"></div>
-          
-          {/* Left White Drawer Element */}
-          <div className="absolute bottom-20 left-36 w-56 h-24 bg-white flex justify-center pt-3 shadow-sm border border-gray-100">
-             <div className="w-12 h-3.5 bg-[#cbd5e1] rounded-full"></div>
-             {/* Checkmark Circle */}
-             <div className="absolute bottom-4 right-12 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-sm">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-             </div>
-          </div>
-
-          {/* Right Brown Boxes Element */}
-          <div className="absolute bottom-20 right-24 w-48 h-32 bg-[#b48d66] flex flex-wrap border-t border-l border-[#9c7956]">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="w-1/2 h-1/2 border-r border-b border-[#9c7956] flex items-center pl-3 relative">
-                <div className="w-2 h-2 rounded-full bg-white/60"></div>
-                {/* Overlay Checkmark */}
-                {i === 4 && (
-                  <div className="absolute -bottom-3 -right-3 w-8 h-8 bg-white border-2 border-blue-200 rounded-full flex items-center justify-center">
-                    <div className="w-3.5 h-3.5 border-2 border-blue-400 rounded-sm"></div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Top floating White Search/Filter Box */}
-          <div className="absolute top-20 left-36 w-64 h-14 bg-white flex items-center px-5 shadow-sm border border-gray-100">
-            <div className="w-24 h-2 bg-gray-200 rounded-full"></div>
-            {/* Outline Circle */}
-            <div className="absolute top-3 -right-4 w-8 h-8 bg-white border-2 border-blue-200 rounded-full flex items-center justify-center shadow-sm">
-               <div className="w-3 h-3 border-2 border-blue-400 rounded-sm"></div>
-            </div>
-          </div>
-
-          {/* Left Side Floating Menu Overlay */}
-          <div className="absolute left-16 top-16 w-[70px] bg-[#e2e2e2] rounded-lg shadow-lg flex flex-col items-center py-4 gap-4 z-10 border border-gray-300">
-             <div className="w-12 h-12 border-[3px] border-[#fc6c3f] bg-[#9cbdb9] rounded-sm relative"></div>
-             <div className="w-12 h-12 bg-[#557e87] rounded-sm relative">
-                <svg className="absolute -bottom-5 -right-5 w-10 h-10 text-white drop-shadow-md z-20" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 21a.5.5 0 01-.5-.5v-4.79l-2.15 2.15a.5.5 0 01-.7 0l-1.41-1.42a.5.5 0 010-.7l6.06-6.06a.5.5 0 01.7 0l6.06 6.06a.5.5 0 010 .7l-1.41 1.41a.5.5 0 01-.7 0L17.5 15.71V20.5a.5.5 0 01-.5.5h-3.5zM4 10.5a6.5 6.5 0 1113 0H4z" /></svg>
-             </div>
-             <div className="w-12 h-12 bg-white rounded-sm shadow-inner"></div>
-          </div>
+        {/* Right Column - Hero Image (REPLACED) */}
+        <div className="hidden lg:flex flex-1 w-full h-[400px] rounded-lg overflow-hidden shadow-xl select-none">
+          <img 
+            src={HeroImage} 
+            alt="Floor Visualization Demo" 
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
 
@@ -252,7 +207,7 @@ function App() {
         </div>
       </div>
 
-      {/* ================= NEW FOOTER LOGO ================= */}
+      {/* ================= FOOTER LOGO ================= */}
       <div className="w-full flex justify-center items-center py-10 mt-auto">
         <img 
           src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" 
