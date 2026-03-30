@@ -9,7 +9,8 @@ import floorCalla from '../assets/image4.jpeg';
 import floorTansy from '../assets/image5.jpeg';
 import floorPoppy from '../assets/image6.jpeg';
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+// const BACKEND_URL = 'http://127.0.0.1:8000';
+const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 
 const ARVisualizer = ({ closeModal, initialImage }) => {
   // 2. USE THE IMPORTED VARIABLES FOR THE `img` PROPERTY
