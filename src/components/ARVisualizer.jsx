@@ -8,9 +8,13 @@ import floorCedar from '../assets/image3.jpeg';
 import floorCalla from '../assets/image4.jpeg';
 import floorTansy from '../assets/image5.jpeg';
 import floorPoppy from '../assets/image6.jpeg';
-import wonderfloorimage from '../assets/wonderfloor_image.jpg';
+import floorPoppy1 from '../assets/image7.jpeg';
+import floorPoppy2 from '../assets/image8.jpeg';
+import floorPoppy3 from '../assets/image9.jpeg';
+import floorPoppy4 from '../assets/image10.jpeg';
+import floorPoppy5 from '../assets/image11.jpeg';
 
-// const BACKEND_URL = 'http://127.0.0.1:8000';
+// const BACKEND_URL = 'http://127.0.0.8000
 const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 
 const ARVisualizer = ({ closeModal, initialImage }) => {
@@ -22,8 +26,15 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     // { id: 4, name: 'Faye', size: '6cm x 36cm', img: floorFaye },
     { id: 5, name: 'Calla', size: '30cm x 30cm', img: floorCalla },
     { id: 6, name: 'Tansy', size: '30cm x 30cm', img: floorTansy },
-    { id: 7, name: 'Poppy1', size: '30cm x 30cm', img: floorPoppy },
-    { id: 8, name: 'wonderfloorImage', size: '30cm x 30cm', img: wonderfloorimage },
+    { id: 7, name: 'Vintage Wood', size: '30cm x 30cm', img: floorPoppy },
+    { id: 9, name: 'Urban', size: '30cm x 30cm', img: floorPoppy1 },
+    { id: 10, name: 'Pearl Shine', size: '30cm x 30cm', img: floorPoppy2 },
+    { id: 11, name: 'Terra Brown', size: '30cm x 30cm', img: floorPoppy3 },
+    { id: 12, name: 'Poppy5', size: '30cm x 30cm', img: floorPoppy4 },
+    { id: 13, name: 'Poppy6', size: '30cm x 30cm', img: floorPoppy5 },
+
+
+    // { id: 8, name: 'wonderfloorImage', size: '30cm x 30cm', img: wonderfloorimage },
     // { id: 8, name: 'Alchimia', size: 'Custom Size', img: floorAlchimia, description: 'glossy white marble ceramic tile with grey veining' }
   ];
 

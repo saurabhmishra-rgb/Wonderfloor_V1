@@ -1,13 +1,20 @@
+// app.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import ARVisualizer from './components/ARVisualizer'; 
 
 // --- 1. Import all local images from your assets folder ---
 import Hospital from './assets/Hospital_02.jpg';
 import office02 from './assets/Office-Flooring_02.jpg';
-import residential03 from './assets/Residential-Flooring_03.jpg';
-import school03 from './assets/School-Flooring_03.jpg';
+import residential03 from './assets/Residential-Flooring_02.jpg';
+import school03 from './assets/School-Flooring_02.jpg';
 import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
-import HeroImage from './assets/hero.png'; // ← Add this import for the Hero image
+import HeroImage from './assets/hero.png';
+import Sport from './assets/Sports-Flooring_01.jpg';
+import Transport from './assets/Transport-Flooring_03.jpg';
+import Auditorial from './assets/Auditorium-Flooring_01.jpg';
+import Hotel from './assets/Hotel_Hospitality-Flooring_01.jpg';
+import Industrial from './assets/Industrial-Flooring_02.jpg';
+import Logo from './assets/logo.png';
 
 
 function App() {
@@ -36,6 +43,7 @@ function App() {
 
   // --- Industry Data ---
   const industries = [
+    "USER INDUSTRY", // Added default state to the list for easy resetting
     "Industrial Flooring",
     "Office Flooring",
     "Residential Flooring",
@@ -49,14 +57,26 @@ function App() {
     "Luxury Vinyl Tile"
   ];
 
-  // --- 2. Update demoRooms to use the imported local images ---
-  const demoRooms = [
-    { id: 2, name: 'Hospital', img: Hospital },
-    { id: 4, name: 'Office Space', img: office02 },
-    { id: 7, name: 'Residential', img: residential03 },
-    { id: 10, name: 'School-Flooring', img: school03 },
-    { id: 11, name: 'Supermarket', img: superMarket01 },
+  // --- 2. Update demoRooms to include categories ---
+  // All imported images are now included in the demo rooms
+  const allDemoRooms = [
+    { id: 12, name: 'Industrial Flooring', img: Industrial, category: 'Industrial Flooring' },
+    { id: 4, name: 'Office Flooring', img: office02, category: 'Office Flooring' },
+    { id: 7, name: 'Residential Flooring', img: residential03, category: 'Residential Flooring' },
+     { id: 10, name: 'School Flooring', img: school03, category: 'School Flooring' },
+      { id: 13, name: 'Sports Flooring', img: Sport, category: 'Sports Flooring' },
+    { id: 11, name: 'Supermarket Flooring', img: superMarket01, category: 'Supermarket Flooring' }, 
+    { id: 14, name: 'Transport Flooring', img: Transport, category: 'Transport Flooring' },
+     { id: 2, name: 'Hospital Flooring', img: Hospital, category: 'Hospital Flooring' },
+    { id: 15, name: 'Auditorium Flooring', img: Auditorial, category: 'Auditorium Flooring' },
+    { id: 16, name: 'Hotel/ Hospitality Flooring', img: Hotel, category: 'Hotel/ Hospitality Flooring' },
   ];
+
+  // --- 3. Filter Logic ---
+  // If "USER INDUSTRY" is selected, show all. Otherwise, filter by selected category.
+  const displayedRooms = selectedIndustry === 'USER INDUSTRY' 
+    ? allDemoRooms 
+    : allDemoRooms.filter(room => room.category === selectedIndustry);
 
   const handleUploadClick = () => fileInputRef.current.click();
 
@@ -68,7 +88,6 @@ function App() {
     }
   };
 
-  // --- 3. Updated Demo Click Handler ---
   const handleDemoRoomClick = async (imgUrl) => {
     try {
       const response = await fetch(imgUrl);
@@ -86,36 +105,27 @@ function App() {
   return (
     <div className="relative max-w-[1300px] mx-auto px-4 sm:px-6 py-12 font-sans text-gray-800 bg-white min-h-screen flex flex-col overflow-x-hidden">
       
-      {/* Top Section: Responsive Stack to Side-by-Side */}
+      {/* Top Section */}
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-16 mt-16 sm:mt-20 md:mt-24 mb-16 sm:mb-24 w-full">
         
-        {/* Left Column - Heading & Controls */}
-        <div className="w-full lg:w-[480px] flex flex-col gap-6 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
-          
-          <h1 className="text-[32px] sm:text-[36px] lg:text-[42px] font-bold text-[#202938] mb-2 tracking-tight text-center lg:text-left leading-[1.2] break-words">
+        <div className="w-full lg:w-[480px] flex flex-col gap-4 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
+          <img 
+            src={Logo} 
+            alt="Wonderfloor Logo" 
+            className="w-[200px] h-auto mb-1 mx-auto lg:mx-0"
+          />
+          <h1 className="text-[32px] sm:text-[36px] lg:text-[42px] font-bold text-[#202938] mb-1 tracking-tight text-center lg:text-left leading-[1.15] break-words">
             See live floor transformation in your room
           </h1>
 
-          <ul className="text-[15px] sm:text-[16px] text-gray-600 space-y-4 font-medium mb-2">
-            <li className="flex items-center gap-3 justify-center lg:justify-start">
-              <svg className="w-6 h-6 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-              Upload a picture of your room
-            </li>
-            <li className="flex items-center gap-3 justify-center lg:justify-start">
-              <svg className="w-6 h-6 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-              Try our products in your room
-            </li>
-          </ul>
+          <div className="text-[15px] sm:text-[16px] text-gray-800 space-y-1 font-normal mb-1">
+            <p className="text-center lg:text-left">Upload a photo of your room</p>
+          </div>
           
-          {/* Primary Upload Button */}
           <button 
             onClick={handleUploadClick}
-            className="cursor-pointer bg-[#0c5bc6] hover:bg-[#09479e] text-white font-bold py-3.5 px-6 rounded-[8px] border-[2.5px] border-[#4b8cf3] text-[17px] tracking-wide transition duration-200 w-full lg:w-[340px] flex items-center justify-center gap-2 shadow-sm"
+            className="cursor-pointer bg-[#e8f442] hover:bg-[#d4e030] text-black font-bold py-3.5 px-6 rounded-[4px] text-[16px] tracking-wide transition duration-200 w-full lg:w-[280px] flex items-center justify-center gap-2 shadow-sm mt-2"
           >
-            <svg className="w-[26px] h-[26px]" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4 4h3v2H5v13h14V9h-2V7h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" />
-              <path d="M12 20a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11zm0-2a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM9 2h2v3H9V2zM7 4V2h2v2H7z" />
-            </svg>
             Upload
           </button>
           
@@ -128,12 +138,11 @@ function App() {
           />
         </div>
 
-        {/* Right Column - Hero Image (REPLACED) */}
-        <div className="hidden lg:flex flex-1 w-full h-[400px] rounded-lg overflow-hidden shadow-xl select-none">
+        <div className="hidden lg:flex flex-1 w-full h-[351px] rounded-lg overflow-hidden shadow-xl select-none">
           <img 
             src={HeroImage} 
             alt="Floor Visualization Demo" 
-            className="w-full h-full object-cover"
+            className="w-full h-full"
           />
         </div>
       </div>
@@ -141,14 +150,11 @@ function App() {
       {/* Bottom Section - Demo Rooms Grid */}
       <div className="flex-grow">
         
-        {/* === HEADER & DROPDOWN CONTAINER === */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 relative z-30 gap-4">
-          
           <h3 className="text-[18px] sm:text-[20px] font-bold text-gray-400">
             Don't have a picture? Try our demo rooms instead
           </h3>
           
-          {/* USER INDUSTRY DROPDOWN */}
           <div className="relative w-full sm:w-auto" ref={dropdownRef}>
             <button 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -160,7 +166,6 @@ function App() {
               </svg>
             </button>
 
-            {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-full sm:w-64 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.15)] border-t-[3px] border-[#fc6c3f] py-2 z-50 rounded-b max-h-[300px] overflow-y-auto">
                 {industries.map((industry, index) => (
@@ -171,8 +176,8 @@ function App() {
                       setIsDropdownOpen(false);
                     }}
                     className={`cursor-pointer w-full text-left px-5 py-2.5 text-[15px] transition-colors ${
-                      selectedIndustry === industry || (selectedIndustry === 'USER INDUSTRY' && index === 0)
-                        ? 'text-[#fc6c3f]' 
+                      selectedIndustry === industry 
+                        ? 'text-[#fc6c3f] bg-gray-50' 
                         : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
                     }`}
                   >
@@ -184,39 +189,36 @@ function App() {
           </div>
         </div>
         
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 relative z-10">
-          {demoRooms.map((room) => (
-            <div 
-              key={room.id} 
-              className="cursor-pointer group flex flex-col gap-3"
-              onClick={() => handleDemoRoomClick(room.img)}
-            >
-              <div className="overflow-hidden rounded-none bg-gray-100">
-                <img 
-                  src={room.img} 
-                  alt={room.name} 
-                  className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" 
-                />
+        {/* Render dynamically filtered rooms */}
+        {displayedRooms.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 relative z-10">
+            {displayedRooms.map((room) => (
+              <div 
+                key={room.id} 
+                className="cursor-pointer group flex flex-col gap-3"
+                onClick={() => handleDemoRoomClick(room.img)}
+              >
+                <div className="overflow-hidden rounded-none bg-gray-100">
+                  <img 
+                    src={room.img} 
+                    alt={room.name} 
+                    className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" 
+                  />
+                </div>
+                <p className="text-[12px] text-[#0b5c58] font-bold uppercase tracking-wider px-1">
+                  {room.name}
+                </p>
               </div>
-              <p className="text-[12px] text-[#0b5c58] font-bold uppercase tracking-wider px-1">
-                {room.name}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          /* Empty state when an industry has no images yet */
+          <div className="w-full py-12 text-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+            <p className="text-lg">No demo rooms available for {selectedIndustry} yet.</p>
+          </div>
+        )}
       </div>
 
-      {/* ================= FOOTER LOGO ================= */}
-      <div className="w-full flex justify-center items-center py-10 mt-auto">
-        <img 
-          src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" 
-          alt="Wonderfloor Logo" 
-          className="h-10 object-contain opacity-90 hover:opacity-100 transition-opacity"
-        />
-      </div>
-
-      {/* AR Modal Overlay */}
       {isModalOpen && (
         <ARVisualizer 
            closeModal={() => setIsModalOpen(false)} 
