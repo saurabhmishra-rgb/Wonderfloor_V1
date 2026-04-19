@@ -20,18 +20,18 @@ const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 const ARVisualizer = ({ closeModal, initialImage }) => {
   // 2. USE THE IMPORTED VARIABLES FOR THE `img` PROPERTY
   const mockProducts = [
-    { id: 1, name: 'Acton', size: '30cm x 30cm', img: floorActon },
-    { id: 2, name: 'Holmes', size: '30cm x 30cm', img: floorHolmes },
-    { id: 3, name: 'Cedar', size: '30cm x 30cm', img: floorCedar },
+    { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon },
+    { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes },
+    { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar },
     // { id: 4, name: 'Faye', size: '6cm x 36cm', img: floorFaye },
-    { id: 5, name: 'Calla', size: '30cm x 30cm', img: floorCalla },
-    { id: 6, name: 'Tansy', size: '30cm x 30cm', img: floorTansy },
-    { id: 7, name: 'Vintage Wood', size: '30cm x 30cm', img: floorPoppy },
-    { id: 9, name: 'Urban', size: '30cm x 30cm', img: floorPoppy1 },
-    { id: 10, name: 'Pearl Shine', size: '30cm x 30cm', img: floorPoppy2 },
-    { id: 11, name: 'Terra Brown', size: '30cm x 30cm', img: floorPoppy3 },
-    { id: 12, name: 'Poppy5', size: '30cm x 30cm', img: floorPoppy4 },
-    { id: 13, name: 'Poppy6', size: '30cm x 30cm', img: floorPoppy5 },
+    { id: 5, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla },
+    { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy },
+    { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy },
+    { id: 9, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1 },
+    { id: 10, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2 },
+    { id: 11, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3 },
+    { id: 12, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4 },
+    { id: 13, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5 },
 
 
     // { id: 8, name: 'wonderfloorImage', size: '30cm x 30cm', img: wonderfloorimage },

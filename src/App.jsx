@@ -124,7 +124,7 @@ function App() {
           
           <button 
             onClick={handleUploadClick}
-            className="cursor-pointer bg-[#e8f442] hover:bg-[#d4e030] text-black font-bold py-3.5 px-6 rounded-[4px] text-[16px] tracking-wide transition duration-200 w-full lg:w-[280px] flex items-center justify-center gap-2 shadow-sm mt-2"
+            className="cursor-pointer bg-[#f05c3f] hover:bg-[#f05c4f] text-[#ffffff] font-bold py-3.5 px-6 rounded-[4px] text-[16px] tracking-wide transition duration-200 w-full lg:w-[280px] flex items-center justify-center gap-2 shadow-sm mt-2"
           >
             Upload
           </button>
