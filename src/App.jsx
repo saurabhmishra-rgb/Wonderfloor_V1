@@ -35,8 +35,8 @@ function App() {
   const productDropdownRef = useRef(null);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedIndustry, setSelectedIndustry] = useState('USER INDUSTRY');
-  
+  const [selectedIndustry, setSelectedIndustry] = useState('ALL INDUSTRY');
+
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState('FLOORING PRODUCTS');
 
@@ -56,15 +56,15 @@ function App() {
   useEffect(() => {
     socket.on('image_uploaded_from_mobile', async (base64Data) => {
       console.log("Image received from mobile! Processing...");
-      
+
       try {
         const res = await fetch(base64Data);
         const blob = await res.blob();
         const file = new File([blob], "mobile_upload.jpg", { type: "image/jpeg" });
 
         setSelectedRoomImage({ previewUrl: base64Data, isDemo: false, rawFile: file });
-        setShowQR(false); 
-        setIsModalOpen(true); 
+        setShowQR(false);
+        setIsModalOpen(true);
         console.log("Visualizer opened successfully!");
       } catch (error) {
         console.error("Failed to process the mobile image:", error);
@@ -98,7 +98,7 @@ function App() {
   }, [dropdownRef, productDropdownRef]);
 
   const industries = [
-    "USER INDUSTRY",
+    "ALL INDUSTRY",
     "Industrial Flooring",
     "Office Flooring",
     "Residential Flooring",
@@ -143,25 +143,58 @@ function App() {
   ];
 
   const allDemoRooms = [
-    { id: 'ind-duro', name: 'Industrial flooring1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
-    { id: 'ind-sig', name: 'Industrial flooring2', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
-    { id: 4, name: 'Office Flooring1', img: office02, category: 'Office Flooring', product: ['Siggma','Trendo wood','Ornate','Antique','Hi-Tech','Trendo Chips','Stoneland Monza','Adventus'] },
-    { id: 41, name: 'Office Flooring2', img: DefaultImage, category: 'Office Flooring', product: ['Siggma','Trendo wood','Ornate','Antique','Hi-Tech','Trendo Chips','Stoneland Monza','Adventus']},
-    { id: 7, name: 'Residential Flooring1', img: residential03, category: 'Residential Flooring', product: ['Trendo wood','Ornate','Duratek','Galaxxy','Luxuria','Antique','GDP','Hi-Tech','Uttsav','Oriion','Rangolie',] },
-    { id: 122, name: 'Residential Flooring2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood','Ornate','Duratek','Galaxxy','Luxuria','Antique','GDP','Hi-Tech','Uttsav','Oriion','Rangolie',] },
-    { id: 10, name: 'School Flooring1', img: school03, category: 'School Flooring', product: ['Krayons','Rhythm','Trendo Chips'] },
-    { id: 123, name: 'School Flooring2', img: DefaultImage, category: 'School Flooring', product: ['Krayons','Rhythm','Trendo Chips'] },
-    { id: 13, name: 'Sports Flooring1', img: Sport, category: 'Sports Flooring', product: ['Ornate','Braavo'] },
-    { id: 124, name: 'Sports Flooring2', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate','Braavo'] },
-    { id: 11, name: 'Supermarket Flooring1', img: superMarket01, category: 'Supermarket Flooring', product: ['Durofloor','Siggma','Timberland Exotica 2mm','Trendo wood','Ornate','Trendo Chips','Oriion'] },
-    { id: 125, name: 'Supermarket Flooring2', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor','Siggma','Timberland Exotica 2mm','Trendo wood','Ornate','Trendo Chips','Oriion'] },
-    { id: 14, name: 'Transport Flooring1', img: Transport, category: 'Transport Flooring', product: ['Traction / Safety','Matrixx (Export)','D’ziner',] },
-    { id: 126, name: 'Transport Flooring2', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety','Matrixx (Export)','D’ziner',] },
-    { id: 2, name: 'Hospital Flooring1', img: Hospital, category: 'Hospital Flooring', product: ['Siggma','Orbit','Trendo Chips','Wallspro Plus','Adventus'] },
-    { id: 127, name: 'Hospital Flooring2', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma','Orbit','Trendo Chips','Wallspro Plus','Adventus'] },
-    { id: 15, name: 'Auditorium Flooring1', img: Auditorial, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm','Trendo wood','Braavo','Stoneland Monza','Timberland Herringbone 2mm'] },
-    { id: 128, name: 'Auditorium Flooring2', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm','Trendo wood','Braavo','Stoneland Monza','Timberland Herringbone 2mm'] },
-    { id: 129, name: 'Hotal flooring1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm','Trendo wood','Ornate','Braavo','Timberworld 1.5 mm','Stoneland Monza','Meteor','Timberland Herringbone 2mm','Grandeure Premium Luxury Planks 2mm'] },
+    { id: 'ind-duro', name: 'Industrial Flooring Option 1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
+    { id: 'ind-sig', name: 'Industrial Flooring Option 2', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+    { id: 'ind-sig', name: 'Industrial Flooring Option 3', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+    { id: 'ind-sig', name: 'Industrial Flooring Option 4', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+
+    { id: 4, name: 'Office Flooring Option 1', img: office02, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 41, name: 'Office Flooring Option 2', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 42, name: 'Office Flooring Option 3', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 43, name: 'Office Flooring Option 4', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+
+    { id: 7, name: 'Residential Flooring Option 1', img: residential03, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 122, name: 'Residential Flooring Option 2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 122, name: 'Residential Flooring Option 3', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 122, name: 'Residential Flooring Option 4', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+
+    { id: 10, name: 'School Flooring Option 1', img: school03, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+    { id: 123, name: 'School Flooring Option 2', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+    { id: 123, name: 'School Flooring Option 3', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+    { id: 123, name: 'School Flooring Option 4', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+
+    { id: 13, name: 'Sports Flooring Option 1', img: Sport, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 124, name: 'Sports Flooring Option 2', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 124, name: 'Sports Flooring Option 3', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 124, name: 'Sports Flooring Option 4', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+
+    { id: 11, name: 'Supermarket Flooring Option 1', img: superMarket01, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 125, name: 'Supermarket Flooring Option 2', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 125, name: 'Supermarket Flooring Option 3', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 125, name: 'Supermarket Flooring Option 4', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+
+    { id: 14, name: 'Transport Flooring Option 1', img: Transport, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 126, name: 'Transport Flooring Option 2', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 126, name: 'Transport Flooring Option 3', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 126, name: 'Transport Flooring Option 4', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+
+
+    { id: 2, name: 'Hospital Flooring Option 1', img: Hospital, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 127, name: 'Hospital Flooring Option 2', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 127, name: 'Hospital Flooring Option 3', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 127, name: 'Hospital Flooring Option 4', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+
+
+    { id: 15, name: 'Auditorium Flooring Option 1', img: Auditorial, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 128, name: 'Auditorium Flooring Option 2', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 128, name: 'Auditorium Flooring Option 3', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 128, name: 'Auditorium Flooring Option 4', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+
+
+    { id: 129, name: 'Hotel Flooring Option 1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },          
+    { id: 130, name: 'Hotel Flooring Option 2', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+    { id: 130, name: 'Hotel Flooring Option 3', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+    { id: 130, name: 'Hotel Flooring Option 4', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
   ];
 
   const handleUploadClick = () => fileInputRef.current.click();
@@ -188,7 +221,7 @@ function App() {
     }
   };
 
-  const isDefaultView = selectedIndustry === 'USER INDUSTRY' && selectedProduct === 'FLOORING PRODUCTS';
+  const isDefaultView = selectedIndustry === 'ALL INDUSTRY' && selectedProduct === 'FLOORING PRODUCTS';
 
   const displayedRooms = allDemoRooms.filter(room => {
     if (selectedProduct !== 'FLOORING PRODUCTS') {
@@ -211,10 +244,10 @@ function App() {
 
   return (
     // --- UPDATED: Global Wrapper strictly preventing any horizontal scrolling ---
-    <div className="w-full min-h-screen bg-white overflow-x-hidden">
-      
+    <div className="w-full min-h-screen mt-[-5%] bg-white  overflow-x-hidden">
+
       {/* --- Main Content Container --- */}
-      <div className="absolute inset-0 w-full max-w-[1300px] mx-auto px-4 sm:px-6 py-12 font-sans text-gray-800 flex flex-col">
+      <div className="relative inset-0 w-full max-w-[1300px] mx-auto px-4 sm:px-6 py-15 font-sans text-gray-800 flex flex-col">
 
         <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-16 mt-16 sm:mt-20 md:mt-24 mb-16 sm:mb-24 w-full">
           <div className="w-full lg:w-[480px] flex flex-col gap-4 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
@@ -237,7 +270,7 @@ function App() {
             <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
 
             {/* QR CODE BUTTON */}
-            <button 
+            <button
               onClick={handleGenerateQR}
               className="cursor-pointer bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3.5 px-6 rounded-[4px] text-[14px] transition duration-200 w-full lg:w-[280px] flex items-center justify-center gap-2 mt-1 shadow-sm"
             >
@@ -248,8 +281,8 @@ function App() {
             {showQR && (
               <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
                 <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center relative max-w-sm w-full mx-4 border-t-4 border-[#f05c3f] animate-fade-in-up">
-                  
-                  <button 
+
+                  <button
                     onClick={() => setShowQR(false)}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-800 transition-colors cursor-pointer"
                   >
@@ -262,12 +295,12 @@ function App() {
                   </p>
 
                   <div className="p-3 border-4 border-gray-100 rounded-xl bg-white mb-6 shadow-sm">
-                    <QRCodeCanvas 
-                      value={`http://192.168.1.130:5173/mobile-upload?session=${sessionId}`} 
-                      size={180} 
+                    <QRCodeCanvas
+                      value={`http://192.168.1.130:5173/mobile-upload?session=${sessionId}`}
+                      size={180}
                     />
                   </div>
-                  
+
                   <div className="flex items-center gap-2 text-[#f05c3f]">
                     <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -293,7 +326,7 @@ function App() {
             </h3>
 
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              
+
               {/* 1. Flooring Products Dropdown */}
               <div className="relative w-full sm:w-auto" ref={productDropdownRef}>
                 <button
@@ -313,12 +346,12 @@ function App() {
                         key={index}
                         onClick={() => {
                           setSelectedProduct(product);
-                          setSelectedIndustry('USER INDUSTRY'); 
+                          setSelectedIndustry('ALL INDUSTRY');
                           setIsProductDropdownOpen(false);
                         }}
                         className={`cursor-pointer w-full text-left px-5 py-2.5 text-[15px] transition-colors ${selectedProduct === product
-                            ? 'text-[#fc6c3f] bg-gray-50'
-                            : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
+                          ? 'text-[#fc6c3f] bg-gray-50'
+                          : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
                           }`}
                       >
                         {product}
@@ -351,8 +384,8 @@ function App() {
                           setIsDropdownOpen(false);
                         }}
                         className={`cursor-pointer w-full text-left px-5 py-2.5 text-[15px] transition-colors ${selectedIndustry === industry
-                            ? 'text-[#fc6c3f] bg-gray-50'
-                            : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
+                          ? 'text-[#fc6c3f] bg-gray-50'
+                          : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
                           }`}
                       >
                         {industry}
@@ -365,7 +398,7 @@ function App() {
             </div>
           </div>
 
-          { isDefaultView ? (
+          {isDefaultView ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 relative z-10">
               {uniqueCategories.map((cat) => (
                 <div key={`cat-${cat.id}`} className="cursor-pointer group flex flex-col gap-3" onClick={() => setSelectedIndustry(cat.category)}>
@@ -380,15 +413,15 @@ function App() {
             </div>
           ) : (
             <div>
-              <button 
+              <button
                 onClick={() => {
-                  setSelectedIndustry('USER INDUSTRY');
+                  setSelectedIndustry('ALL INDUSTRY');
                   setSelectedProduct('FLOORING PRODUCTS');
-                }} 
+                }}
                 className="mb-6 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#f05c3f] transition-colors cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back To Home
+                Go Back
               </button>
 
               {displayedRooms.length > 0 ? (
@@ -415,7 +448,7 @@ function App() {
           )}
         </div>
       </div>
-      
+
       {/* ARVisualizer placed safely outside the width-restricted container */}
       {isModalOpen && (
         <ARVisualizer closeModal={() => setIsModalOpen(false)} initialImage={selectedRoomImage} />

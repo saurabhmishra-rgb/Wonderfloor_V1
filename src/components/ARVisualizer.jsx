@@ -18,7 +18,6 @@ const BACKEND_URL = 'http://127.0.0.8000';
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 
 const ARVisualizer = ({ closeModal, initialImage }) => {
-  // Added dummy properties and 'accordionCategory' to test the accordion grouping
   const mockProducts = [
     { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', materials: 'Nylon', collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
     { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', materials: 'PET', collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
@@ -54,10 +53,16 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [detailsProduct, setDetailsProduct] = useState(null);
 
+  // Favorites Tracking
+  const [favoriteProducts, setFavoriteProducts] = useState([]);
+
   // Dropdown States
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
+  const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false); 
   const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false); 
+  
   const shareRef = useRef(null);
+  const downloadRef = useRef(null);
   const menuRef = useRef(null);
   
   // Toolbar States
@@ -78,7 +83,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     const container = imageContainerRef.current;
     if (!container) return;
     const handleWheel = (e) => {
-      // Prevent zooming the room when a modal overlay is open
       if (isDetailsModalOpen) return;
 
       e.preventDefault();
@@ -97,6 +101,9 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     function handleClickOutside(event) {
       if (shareRef.current && !shareRef.current.contains(event.target)) {
         setIsShareMenuOpen(false);
+      }
+      if (downloadRef.current && !downloadRef.current.contains(event.target)) {
+        setIsDownloadMenuOpen(false);
       }
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsMenuDropdownOpen(false);
@@ -187,11 +194,19 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setIsSidebarOpen(false); 
   };
 
-  // OPEN PRODUCT DETAILS MODAL
   const handleOpenDetails = (e, product) => {
-    e.stopPropagation(); // Prevents tile selection if clicking specifically on "More details ->"
+    e.stopPropagation(); 
     setDetailsProduct(product);
     setIsDetailsModalOpen(true);
+  };
+
+  const toggleFavorite = (e, productId) => {
+    e.stopPropagation(); 
+    setFavoriteProducts(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId) 
+        : [...prev, productId]
+    );
   };
 
   const handleRotate = () => {
@@ -222,17 +237,22 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setIsShareMenuOpen(false);
   };
 
-  const handleDownload = () => {
+  const handleDownload = (option) => {
     if (!currentSrc) return;
+    setIsDownloadMenuOpen(false);
 
     try {
-      const link = document.createElement('a');
-      link.href = currentSrc;
-      const fileName = `Wonderfloor_Design_${Date.now()}.jpg`;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (option === 'image') {
+        const link = document.createElement('a');
+        link.href = currentSrc;
+        const fileName = `Wonderfloor_Design_${Date.now()}.jpg`;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else if (option === 'details') {
+        alert("Downloading Image & Product Details...");
+      }
     } catch (error) {
       console.error("Failed to download image:", error);
       alert("There was an error downloading your image.");
@@ -242,9 +262,9 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const filterCategories = [
     { id: 'colour', label: 'Colour', options: ['Grey', 'Beige', 'Brown', 'Black', 'White'] },
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
-    { id: 'category', label: 'Category', options: ['Tiles', 'Planks', 'Carpet'] },
-    { id: 'materials', label: 'Materials', options: ['Nylon', 'PET', 'Vinyl', 'Ceramic'] },
-    { id: 'collection', label: 'Collection', options: ['GDP', 'Classic', 'Premium'] },
+    { id: 'User Industry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring','School Flooring', 'Sports Flooring'] },
+    { id: 'Pattern/Layout', label: 'Pattern/Layout', options: ['Harringbone'] },
+    { id: 'collection/Style', label: 'Collection/Style', options: ['Wood', 'Stone'] },
   ];
 
   const handleToggleFilter = (categoryId, option) => {
@@ -260,16 +280,28 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
   const clearFilters = () => setActiveFilters({});
 
-  const totalActiveFiltersCount = Object.values(activeFilters).reduce((acc, curr) => acc + curr.length, 0);
-
+  // --- UPDATED SEARCH & FILTER LOGIC ---
   const filteredProducts = mockProducts.filter(prod => {
-    const matchesSearch = prod.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const searchLower = searchQuery.trim().toLowerCase();
+    
+    // Check if the search query matches the SKU name, Accordion Category (Siggma, Durofloor, etc), Collection, or Category
+    const matchesSearch = searchLower === '' || 
+      prod.name.toLowerCase().includes(searchLower) ||
+      (prod.accordionCategory && prod.accordionCategory.toLowerCase().includes(searchLower)) ||
+      (prod.collection && prod.collection.toLowerCase().includes(searchLower)) ||
+      (prod.category && prod.category.toLowerCase().includes(searchLower)) ||
+      (prod.colour && prod.colour.toLowerCase().includes(searchLower));
+
+    // Check Checkbox Filters
     const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
       if (selectedValues.length === 0) return true; 
       return selectedValues.includes(prod[key]); 
     });
+
     return matchesSearch && matchesFilters;
   });
+
+  const totalActiveFiltersCount = Object.values(activeFilters).reduce((acc, curr) => acc + curr.length, 0);
 
   return (
     <div className="fixed inset-0 bg-[#f9fafb] flex z-50 overflow-hidden font-sans text-gray-800">
@@ -416,7 +448,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 <div className="mt-3 animate-fade-in">
                   <input
                     type="text"
-                    placeholder="Search products..."
+                    placeholder="Search products, collections, colors..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full h-10 border border-gray-300 rounded px-3 text-sm focus:outline-none focus:border-[#0b5e5e] focus:ring-1 focus:ring-[#0b5e5e]"
@@ -441,13 +473,14 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                   const categoryProducts = filteredProducts.filter(p => p.accordionCategory === categoryName);
                   if (categoryProducts.length === 0) return null;
 
-                  const isExpanded = expandedProductCategory === categoryName;
+                  // --- UX IMPROVEMENT: Auto-expand the accordion if the user is currently searching ---
+                  const isExpanded = (expandedProductCategory === categoryName) || (searchQuery.trim().length > 0);
 
                   return (
                     <div key={categoryName} className="mb-3">
                       {/* Accordion Header */}
                       <button
-                        onClick={() => setExpandedProductCategory(isExpanded ? null : categoryName)}
+                        onClick={() => setExpandedProductCategory(isExpanded && searchQuery.length === 0 ? null : categoryName)}
                         className={`w-full flex justify-between items-center py-3 px-4 border rounded-lg transition-all duration-300 cursor-pointer ${
                           isExpanded ? 'bg-[#0b5e5e] border-[#0b5e5e] text-white shadow-md' : 'bg-white border-gray-200 hover:bg-gray-50 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
                         }`}
@@ -463,47 +496,71 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                         <div className="pt-3 pb-1">
                           {viewMode === 'list' ? (
                             <div className="flex flex-col gap-3">
-                              {categoryProducts.map((prod) => (
-                                <div
-                                  key={prod.id}
-                                  onClick={() => handleTileSelection(prod)}
-                                  className={`flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300 bg-white ${
-                                    selectedProduct.id === prod.id
-                                      ? 'border-[#0b5e5e] shadow-md bg-[#0b5e5e]/5 transform scale-[1.02]'
-                                      : 'border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1'
-                                    }`}
-                                >
-                                  <img src={prod.img} alt={prod.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shadow-sm bg-gray-100 shrink-0 border border-gray-200" />
-                                  <div className="flex flex-col justify-center min-w-0 flex-1">
-                                    <span className="text-[10px] md:text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
-                                    <span className="font-bold text-sm text-gray-900 truncate mt-0.5">{prod.name}</span>
-                                    <span className="text-xs text-gray-500 mt-1">Size: {prod.size}</span>
-                                    {/* TRIGGER FOR PRODUCT DETAILS MODAL */}
+                              {categoryProducts.map((prod) => {
+                                const isFavorite = favoriteProducts.includes(prod.id);
+                                return (
+                                  <div
+                                    key={prod.id}
+                                    onClick={() => handleTileSelection(prod)}
+                                    className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300 bg-white ${
+                                      selectedProduct.id === prod.id
+                                        ? 'border-[#0b5e5e] shadow-md bg-[#0b5e5e]/5 transform scale-[1.02]'
+                                        : 'border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1'
+                                      }`}
+                                  >
+                                    {/* HEART ICON (LIST VIEW) */}
                                     <button 
-                                      onClick={(e) => handleOpenDetails(e, prod)}
-                                      className="text-xs text-[#0b5e5e] mt-1 hover:underline text-left cursor-pointer z-10 block w-max"
+                                      onClick={(e) => toggleFavorite(e, prod.id)} 
+                                      className="absolute top-2 right-2 p-1 z-10 cursor-pointer"
                                     >
-                                      More details →
+                                      <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#9ca3af"} strokeWidth="2" className="transition-colors hover:scale-110">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                      </svg>
                                     </button>
+
+                                    <img src={prod.img} alt={prod.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shadow-sm bg-gray-100 shrink-0 border border-gray-200" />
+                                    <div className="flex flex-col justify-center min-w-0 flex-1">
+                                      <span className="text-[10px] md:text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
+                                      <span className="font-bold text-sm text-gray-900 truncate mt-0.5 pr-6">{prod.name}</span>
+                                      <span className="text-xs text-gray-500 mt-1">Size: {prod.size}</span>
+                                      <button 
+                                        onClick={(e) => handleOpenDetails(e, prod)}
+                                        className="text-xs text-[#0b5e5e] mt-1 hover:underline text-left cursor-pointer z-10 block w-max"
+                                      >
+                                        More details →
+                                      </button>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           ) : (
                             <div className="grid grid-cols-3 gap-2">
-                              {categoryProducts.map((prod) => (
-                                <div 
-                                  key={prod.id}
-                                  onClick={() => handleTileSelection(prod)}
-                                  className={`aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${
-                                    selectedProduct.id === prod.id 
-                                      ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10 relative' 
-                                      : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'
-                                    }`}
-                                >
-                                  <img src={prod.img} alt={prod.name} className="w-full h-full object-cover bg-gray-100" />
-                                </div>
-                              ))}
+                              {categoryProducts.map((prod) => {
+                                const isFavorite = favoriteProducts.includes(prod.id);
+                                return (
+                                  <div 
+                                    key={prod.id}
+                                    onClick={() => handleTileSelection(prod)}
+                                    className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${
+                                      selectedProduct.id === prod.id 
+                                        ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10' 
+                                        : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'
+                                      }`}
+                                  >
+                                    {/* HEART ICON (GRID VIEW) */}
+                                    <button 
+                                      onClick={(e) => toggleFavorite(e, prod.id)} 
+                                      className="absolute top-1.5 right-1.5 p-1 bg-white/70 backdrop-blur-sm rounded-full z-20 cursor-pointer shadow-sm"
+                                    >
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#6b7280"} strokeWidth="2" className="transition-colors hover:scale-110">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                      </svg>
+                                    </button>
+                                    <img src={prod.img} alt={prod.name} className="w-full h-full object-cover bg-gray-100" />
+                                  </div>
+                                );
+                              })}
                             </div>
                           )}
                         </div>
@@ -514,7 +571,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
                 {filteredProducts.length === 0 && (
                   <div className="text-center text-gray-500 py-8 text-sm">
-                    No products match your active filters.
+                    No products match your search or filters.
                   </div>
                 )}
               </div>
@@ -525,7 +582,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                     <span className="text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
                     <span className="font-bold text-base text-gray-900 mt-1">{selectedProduct.name}</span>
                     <span className="text-sm text-gray-600 mt-2">Size: <span className="font-medium text-gray-900">{selectedProduct.size}</span></span>
-                    {/* TRIGGER FOR PRODUCT DETAILS MODAL IN GRID */}
                     <button 
                       onClick={(e) => handleOpenDetails(e, selectedProduct)}
                       className="text-sm text-[#0b5e5e] mt-4 flex items-center hover:underline cursor-pointer w-max"
@@ -565,12 +621,9 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               <span className="hidden lg:inline">Compare</span>
             </button>
             
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
-            </button>
+           
             
-            {/* SHARE BUTTON */}
+            {/* SHARE DROPDOWN */}
             <div className="relative flex items-center h-full" ref={shareRef}>
               <button onClick={() => setIsShareMenuOpen(!isShareMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> 
@@ -588,10 +641,26 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               )}
             </div>
 
-            <button onClick={handleDownload} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
-              <span className="hidden sm:inline">Download</span>
-            </button>
+            {/* DOWNLOAD DROPDOWN (UPDATED) */}
+            <div className="relative flex items-center h-full" ref={downloadRef}>
+              <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
+                <span className="hidden sm:inline">Download</span>
+              </button>
+              
+              {isDownloadMenuOpen && (
+                <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
+                  <button onClick={() => handleDownload('image')} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-100">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    Image
+                  </button>
+                  <button onClick={() => handleDownload('details')} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Image & Product Details
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-1 md:gap-2 border-l border-gray-200 pl-2 md:pl-4 h-full shrink-0">
@@ -665,7 +734,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 className="w-full h-full object-cover select-none"
               />
 
-              {/* Powered By Wonderfloor Overlay inside the image container */}
               <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-black/40 backdrop-blur-md border border-white/10 px-3 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg">
                 <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
                 <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">wonderfloor</span>
@@ -677,7 +745,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
         {/* Responsive Footer bar */}
         <div className="min-h-[60px] md:h-[70px] bg-white border-t border-gray-200 px-3 md:px-6 py-2 md:py-0 shrink-0 flex flex-wrap md:flex-nowrap items-center justify-between z-20 gap-y-2">
           
-          {/* TRIGGER FOR PRODUCT DETAILS MODAL (FOOTER IMAGE/TEXT BLOCK) */}
           <div 
             onClick={(e) => handleOpenDetails(e, selectedProduct)}
             className="flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer hover:bg-gray-50 p-1.5 -ml-1.5 rounded-md transition-colors group"
@@ -688,7 +755,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               <span className="text-[10px] md:text-xs text-gray-400">{selectedProduct.size}</span>
             </div>
 
-            {/* Footer Controls: Reset, Rotate */}
             <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
               <button 
                 onClick={(e) => { e.stopPropagation(); handleReset(); }} 
@@ -717,9 +783,14 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto justify-end border-t border-gray-100 pt-2 md:border-none md:pt-0">
+             <button className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
+            </button>
             <button onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }} className="text-xs md:text-sm px-3 py-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
               Reset Zoom
             </button>
+
           </div>
         </div>
 
@@ -730,7 +801,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden transform transition-all animate-fade-in-up">
             
-            {/* Header */}
             <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-100 shrink-0">
               <h2 className="text-xl font-bold text-gray-900">Product Details</h2>
               <button onClick={() => setIsDetailsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-500 hover:text-black">
@@ -738,10 +808,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               </button>
             </div>
 
-            {/* Scrollable Body */}
             <div className="overflow-y-auto p-4 sm:p-6 flex flex-col flex-1">
               
-              {/* Top Section: Image & Basic Info */}
               <div className="flex flex-col sm:flex-row gap-6 mb-8">
                 <div className="w-full sm:w-1/2 aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50 shadow-sm shrink-0">
                   <img src={detailsProduct.img} alt={detailsProduct.name} className="w-full h-full object-cover" />
@@ -759,7 +827,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 </div>
               </div>
 
-              {/* Specifications Accordion/List */}
               <div>
                 <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center justify-between cursor-default">
                   Specifications
@@ -796,7 +863,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
             </div>
 
-            {/* Footer */}
             <div className="p-4 sm:p-5 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
               <button className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-[#0b5e5e] hover:underline transition-colors w-full sm:w-auto justify-center sm:justify-start cursor-pointer">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
