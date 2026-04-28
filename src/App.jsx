@@ -1,4 +1,4 @@
-// app.jsx
+// App.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import ARVisualizer from './components/ARVisualizer';
 import { io } from 'socket.io-client';
@@ -139,7 +139,7 @@ function App() {
     "Trendo wood",
     "Trendo Chips",
     "Uttsav",
-    
+    // "Wallspro Plus"
   ];
 
   // --- FIXED: Every single room now has a completely unique ID ---
