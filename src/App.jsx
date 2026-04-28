@@ -139,7 +139,7 @@ function App() {
     "Trendo wood",
     "Trendo Chips",
     "Uttsav",
-    "Wallspro Plus"
+    
   ];
 
   // --- FIXED: Every single room now has a completely unique ID ---

@@ -49,6 +49,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedProductCategory, setExpandedProductCategory] = useState('Durofloor'); 
 
+  const [sortOrder, setSortOrder] = useState('');
+
   // Modal States for Product Details
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [detailsProduct, setDetailsProduct] = useState(null);
@@ -299,6 +301,20 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     });
 
     return matchesSearch && matchesFilters;
+  }).sort((a, b) => {
+    if (sortOrder === 'Prod-A-Z') {
+      return a.name.localeCompare(b.name);
+    } else if (sortOrder === 'Prod-Z-A') {
+      return b.name.localeCompare(a.name);
+    }
+    return 0; 
+  });
+
+   // 2. SORT THE CATEGORIES (ACCORDIONS) 
+  const displayCategories = [...productCategories].sort((a, b) => {
+    if (sortOrder === 'Cat-A-Z') return a.localeCompare(b);
+    if (sortOrder === 'Cat-Z-A') return b.localeCompare(a);
+    return 0; // Default: preserve original array order
   });
 
   const totalActiveFiltersCount = Object.values(activeFilters).reduce((acc, curr) => acc + curr.length, 0);
@@ -331,6 +347,62 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               <p className="text-sm font-medium text-gray-800 mb-4">
                 {totalActiveFiltersCount === 0 ? "No active filters" : `${totalActiveFiltersCount} active filter${totalActiveFiltersCount > 1 ? 's' : ''}`}
               </p>
+              
+              {/* Sort in alphabetically */}
+              <div className="flex flex-col">
+                <button 
+                  onClick={() => setExpandedFilterCategory(expandedFilterCategory === 'sort' ? null : 'sort')}
+                  className={`flex justify-between items-center py-3 px-2 rounded-md transition-colors cursor-pointer ${expandedFilterCategory === 'sort' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                >
+                  <span className="font-medium text-[15px] text-gray-800 flex items-center gap-2">
+                    Sort By
+                  </span>
+                  <svg className={`w-5 h-5 text-gray-500 transition-transform ${expandedFilterCategory === 'sort' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+
+                {expandedFilterCategory === 'sort' && (
+                  <div className="flex flex-col gap-3 py-3 px-2 pl-4">
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                        Default
+                      </span>
+                      <input type="radio" name="sort" value="" checked={sortOrder === ''} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><path d="M3 3h18v18H3zM15 9h-6m6 3h-6m6 3h-6"></path><path d="M9 4v16"></path></svg>
+                        Product Name (A-Z)
+                      </span>
+                      <input type="radio" name="sort" value="Prod-A-Z" checked={sortOrder === 'Prod-A-Z'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><path d="M3 3h18v18H3zM15 15h-6m6-3h-6m6-3h-6"></path><path d="M9 4v16"></path></svg>
+                        Product Name (Z-A)
+                      </span>
+                      <input type="radio" name="sort" value="Prod-Z-A" checked={sortOrder === 'Prod-Z-A'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><path d="M3 3h18v18H3zM15 9h-6m6 3h-6m6 3h-6"></path><path d="M9 4v16"></path></svg>
+                        Category Name (A-Z)
+                      </span>
+                      <input type="radio" name="sort" value="Cat-A-Z" checked={sortOrder === 'Cat-A-Z'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><path d="M3 3h18v18H3zM15 15h-6m6-3h-6m6-3h-6"></path><path d="M9 4v16"></path></svg>
+                        Category Name (Z-A)
+                      </span>
+                      <input type="radio" name="sort" value="Cat-Z-A" checked={sortOrder === 'Cat-Z-A'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                  </div>
+                )}
+              </div>
+              {/* <div className="border-t border-gray-200 my-2"></div> */}
 
               <div className="flex flex-col gap-1">
                 {filterCategories.map((category) => {
@@ -469,7 +541,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             <div className="flex-1 overflow-y-auto px-4 md:px-5 pb-5 pt-4 flex flex-col relative">
               
               <div className="flex-1">
-                {productCategories.map(categoryName => {
+                {displayCategories.map(categoryName => {
                   const categoryProducts = filteredProducts.filter(p => p.accordionCategory === categoryName);
                   if (categoryProducts.length === 0) return null;
 
